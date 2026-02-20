@@ -77,17 +77,29 @@ Visar antal kvigor, medelvikt och listar djur som inte uppnar sin maltillvaxt.
 All data sparas i `data/herd.json` i projektmappen. Filen skapas automatiskt
 vid forsta anvandningen.
 
-## Tester
+## Kvalitetssakring (lint, build, tester)
+
+Installera verktygen en gang:
 
 ```bash
-python -m pytest tests/ -v
+npm install
 ```
 
-eller med enbart standardbiblioteket:
+Kor alla kontroller lokalt:
 
 ```bash
-python -m unittest discover -s tests -v
+npm run check
 ```
+
+Detta kor i ordning:
+- `npm run lint` (ESLint)
+- `npm run build` (Python compile-check)
+- `npm run test` (unittest)
+
+### Pre-commit hook (alltid)
+
+Husky ar konfigurerat med `.husky/pre-commit` och kor automatiskt `npm run check` innan varje commit.
+Det betyder att lint + build + unit tests maste passera for att commiten ska ga igenom.
 
 ## Exempel pa arbetsflode
 

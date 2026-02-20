@@ -1,0 +1,17 @@
+{
+  "name": "kviga-koll",
+  "version": "1.1.0",
+  "private": true,
+  "description": "CLI-verktyg för uppföljning av kvigor",
+  "scripts": {
+    "lint": "eslint . --ext .js,.cjs,.mjs --no-error-on-unmatched-pattern",
+    "build": "python3 -m compileall -q kviga_koll",
+    "test": "python3 -m unittest discover -s tests -v",
+    "check": "npm run lint && npm run build && npm run test",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "eslint": "^9.20.1",
+    "husky": "^9.1.7"
+  }
+}
