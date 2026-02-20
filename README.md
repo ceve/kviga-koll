@@ -1,125 +1,78 @@
-# kviga-koll
+# Kviga-Koll
 
-Praktiskt CLI-verktyg for kviguppfodare. Haller koll pa besattningen, viktutveckling, kommande uppgifter och foderplanering.
+Webbverktyg för uppföljning av kvigor – vikt, uppgifter, foder och statistik.
+Byggt med **Vite + React** (JavaScript). All data sparas i webbläsarens `localStorage`.
 
 ## Funktioner
 
-- **add-animal** -- Lagg till en ny kviga i besattningen
-- **log-weight** -- Registrera viktvagning och se daglig tillvaxttakt (ADG)
-- **due-tasks** -- Visa kommande uppgifter (vaccination, klovvard, brunst)
-- **feed-plan** -- Berakna foderplan baserad pa senaste vikt
-- **summary** -- Sammanfattning: antal, medelvikt, djur under maltillvaxt
+| Flik | Beskrivning |
+|------|-------------|
+| **Lägg till djur** | Registrera kviga med ID, namn, födelsedatum, ras och måltillväxt |
+| **Registrera vikt** | Logga vikter – daglig tillväxt (ADG) beräknas från de två senaste vägningarna |
+| **Kommande uppgifter** | Vaccination (var 180:e dag), klövkontroll (var 90:e dag), brunst-/betäckningskontroll (13–15 månader) |
+| **Foderplan** | Dagligt ts-intag = 2,2 % av kroppsvikt, fördelat 60 % grovfoder / 40 % kraftfoder |
+| **Sammanfattning** | Antal djur, medelvikt, djur under måltillväxt |
 
-## Installation
-
-Inga externa beroenden kravs -- enbart Python 3 standardbibliotek.
-
-```bash
-cd kviga-koll
-```
-
-## Anvandning
-
-### Lagg till en kviga
+## Kom igång
 
 ```bash
-python -m kviga_koll add-animal \
-  --id K001 \
-  --name Bella \
-  --birth-date 2024-06-15 \
-  --breed SRB \
-  --target-gain 0.85
-```
-
-### Registrera vikt
-
-```bash
-python -m kviga_koll log-weight --id K001 --kg 180 --date 2025-01-15
-python -m kviga_koll log-weight --id K001 --kg 205 --date 2025-02-15
-```
-
-Utmatning visar registrerad vikt samt beraknad daglig tillvaxt (ADG) fran de
-tva senaste vagningarna.
-
-### Visa kommande uppgifter
-
-```bash
-python -m kviga_koll due-tasks --days 30
-```
-
-Listar uppgifter som ar aktuella inom angivet antal dagar:
-
-- **Vaccination** -- var 180:e dag fran fodsel
-- **Klovvard** -- var 90:e dag fran fodsel
-- **Brunstkontroll** -- nar kvigan ar 13-15 manader gammal
-
-### Foderplan
-
-```bash
-python -m kviga_koll feed-plan --id K001
-```
-
-Beraknar dagligt torrsubstansintag (2,2 % av kroppsvikt) och fordelar:
-
-- 60 % grovfoder
-- 40 % kraftfoder
-
-### Sammanfattning
-
-```bash
-python -m kviga_koll summary
-```
-
-Visar antal kvigor, medelvikt och listar djur som inte uppnar sin maltillvaxt.
-
-## Datalagring
-
-All data sparas i `data/herd.json` i projektmappen. Filen skapas automatiskt
-vid forsta anvandningen.
-
-## Kvalitetssakring (lint, build, tester)
-
-Installera verktygen en gang:
-
-```bash
+# Installera beroenden
 npm install
+
+# Starta utvecklingsserver
+npm run dev
+
+# Bygg för produktion
+npm run build
 ```
 
-Kor alla kontroller lokalt:
+## Kvalitetskontroll
 
 ```bash
+# Kör ESLint, bygg och tester
 npm run check
+
+# Enbart lint
+npm run lint
+
+# Enbart tester
+npm run test
 ```
 
-Detta kor i ordning:
-- `npm run lint` (ESLint)
-- `npm run build` (Python compile-check)
-- `npm run test` (unittest)
+Pre-commit-hooken (Husky) kör automatiskt `npm run lint && npm run build && npm run test` före varje commit.
 
-### Pre-commit hook (alltid)
+## Tester
 
-Husky ar konfigurerat med `.husky/pre-commit` och kor automatiskt `npm run check` innan varje commit.
-Det betyder att lint + build + unit tests maste passera for att commiten ska ga igenom.
+Enhetstest skrivna med **Vitest** finns i `tests/`. De täcker:
 
-## Exempel pa arbetsflode
+- **ADG-beräkning** – två poster, flera poster, osorterade, kantfall
+- **Foderplan** – standardvikt, liten vikt, nollvikt
+- **Uppgiftsschema** – vaccination, klövkontroll, brunst, horisont, fleruppgifter
 
 ```bash
-# Lagg till tva kvigor
-python -m kviga_koll add-animal --id K001 --name Bella --birth-date 2024-06-15 --breed SRB
-python -m kviga_koll add-animal --id K002 --name Stella --birth-date 2024-08-01 --breed Holstein
-
-# Registrera vikter
-python -m kviga_koll log-weight --id K001 --kg 180 --date 2025-01-15
-python -m kviga_koll log-weight --id K001 --kg 205 --date 2025-02-15
-python -m kviga_koll log-weight --id K002 --kg 160 --date 2025-01-15
-python -m kviga_koll log-weight --id K002 --kg 175 --date 2025-02-15
-
-# Kolla uppgifter
-python -m kviga_koll due-tasks --days 60
-
-# Foderplan for Bella
-python -m kviga_koll feed-plan --id K001
-
-# Sammanfattning
-python -m kviga_koll summary
+npm run test
 ```
+
+## Projektstruktur
+
+```
+src/
+  main.jsx                  Ingångspunkt
+  App.jsx                   Huvudkomponent med flikar
+  index.css                 Global stil
+  utils/
+    calculations.js         ADG, foderplan, uppgiftsberäkning
+    storage.js              localStorage-persistens
+  components/
+    AddAnimalForm.jsx       Formulär för nytt djur
+    LogWeight.jsx           Viktregistrering + ADG
+    DueTasks.jsx            Lista kommande uppgifter
+    FeedPlan.jsx            Foderplan per djur
+    Summary.jsx             Besättningsstatistik
+tests/
+  calculations.test.js     Enhetstest (Vitest)
+```
+
+## Licens
+
+Privat projekt.
